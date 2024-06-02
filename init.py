@@ -27,8 +27,8 @@ class CarMovementApp(tk.Tk):
         self.timer = None 
         self.create_widgets()
         self.bind("<KeyPress>", self.on_key_press)
-        self.anomaly_threshold = 5  # Anomaly threshold for edges
-        self.edge_costs = {edge: 0 for edge in self.get_edges()}  # Initialize edge costs
+        self.anomaly_threshold = 5 
+        self.edge_costs = {edge: 0 for edge in self.get_edges()} 
         self.anomaly_message = tk.Label(self, text="Status: Normal")
         self.anomaly_message.pack()
 
@@ -44,7 +44,7 @@ class CarMovementApp(tk.Tk):
     def draw_graph(self):
         self.canvas.delete("all")
         for (node, (x, y)) in self.node_positions.items():
-            self.canvas.create_oval(x-15, y-15, x+15, y+15, fill="blue") 
+            self.canvas.create_oval(x-15, y-15, x+15, y+15, fill="lightblue") 
             self.canvas.create_text(x, y-25, text=str(node))
 
         for i in range(1, 9):
@@ -70,30 +70,30 @@ class CarMovementApp(tk.Tk):
             self.timer = self.after(100, self.update_current_cost) 
 
     def update_current_cost(self):
-        if self.current_node != self.target_node:  # Check if not on node
-            if not self.is_inside_node(self.current_position):  # Check if not inside node
-                self.current_cost += 0.1  # Increment current cost
+        if self.current_node != self.target_node:
+            if not self.is_inside_node(self.current_position):
+                self.current_cost += 0.1
                 self.total_cost += 0.1
                 self.current_cost_label.config(text=f"Current Cost: {self.current_cost:.3f}")
 
                 edge = self.get_edge_from_nodes(self.current_node, self.target_node)
-                if edge and self.current_cost >= self.anomaly_threshold:  # Changed to >=
-                    self.edge_costs[edge] += 1  # Increment edge cost
+                if edge and self.current_cost >= self.anomaly_threshold:
+                    self.edge_costs[edge] += 1 
                     self.check_anomaly(edge)
         else:
-            if self.is_inside_node(self.current_position):  # Check if inside node
-                self.current_cost = 0  # Reset current cost when inside a node
+            if self.is_inside_node(self.current_position): 
+                self.current_cost = 0 
                 self.current_cost_label.config(text=f"Current Cost: {self.current_cost:.3f}")
             else:
-                self.current_cost = 0  # Reset current cost when on a node but not inside
+                self.current_cost = 0 
                 self.current_cost_label.config(text=f"Current Cost: {self.current_cost:.3f}")
                 
-        if self.current_cost >= self.anomaly_threshold:  # Added condition to stop timer
-            self.after_cancel(self.timer)  # Stop the timer
+        if self.current_cost >= self.anomaly_threshold: 
+            self.after_cancel(self.timer) 
             self.timer = None
             self.anomaly_message.config(text="Status: Anomaly Detected!")
         else:
-            self.timer = self.after(100, self.update_current_cost)  # Schedule next update
+            self.timer = self.after(100, self.update_current_cost) 
 
 
     def move_car(self, dx, dy):
@@ -101,20 +101,18 @@ class CarMovementApp(tk.Tk):
         prev_x, prev_y = self.current_position
         new_x = prev_x + dx * step_size
         new_y = prev_y + dy * step_size
-
-        # Check if the new position is valid and on a path
         if self.is_valid_move(new_x, new_y) and self.is_on_path(new_x, new_y):
             self.current_position = (new_x, new_y)
             self.canvas.coords(self.car, new_x - 5, new_y - 5, new_x + 5, new_y + 5)
-
-            # Check if the car is near a new node
             for node, (nx, ny) in self.node_positions.items():
                 if math.isclose(new_x, nx, abs_tol=10) and math.isclose(new_y, ny, abs_tol=10):
                     self.current_node = node
-                    if node in [1, 2, 3, 4, 5, 6, 7, 8]:  # Check if the car is inside a blue dot node
-                        self.current_cost = 0  # Reset current cost
+                    if node in [1, 2, 3, 4, 5, 6, 7, 8]: 
+                        self.current_cost = 0 
                         self.current_cost_label.config(text=f"Current Cost: {self.current_cost:.3f}")
+                        self.anomaly_message.config(text="Status: Normal")
                     break
+
 
 
 
@@ -138,8 +136,7 @@ class CarMovementApp(tk.Tk):
         return False
 
     def is_point_on_line(self, px, py, x1, y1, x2, y2):
-        # Check if point (px, py) is on the line segment defined by (x1, y1) and (x2, y2)
-        tolerance = 10  # Adjust tolerance as needed
+        tolerance = 10 
         dist = abs((y2-y1)*px - (x2-x1)*py + x2*y1 - y2*x1) / math.sqrt((y2-y1)**2 + (x2-x1)**2)
         return dist <= tolerance and min(x1, x2) <= px <= max(x1, x2) and min(y1, y2) <= py <= max(y1, y2)
 

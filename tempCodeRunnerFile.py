@@ -16,4 +16,5 @@
                     if node in [1, 2, 3, 4, 5, 6, 7, 8]:  # Check if the car is inside a blue dot node
                         self.current_cost = 0  # Reset current cost
                         self.current_cost_label.config(text=f"Current Cost: {self.current_cost:.3f}")
+                        self.anomaly_message.config(text="Status: Normal")  # Reset anomaly status
                     break
