@@ -10,7 +10,6 @@ classify anomaly on basis:
 
 2. if the distance between to and from is too high, then high cost is okay, and no anomaly here
 
-help me write a neural network model for this
 if a pair of "to" "from" and "cost" are anomaly or not
 from,to,cost
 721,445,0.79
